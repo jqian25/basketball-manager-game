@@ -14,16 +14,21 @@ export default function Home() {
   const [showOpening, setShowOpening] = useState(true);
   const [showLogin, setShowLogin] = useState(false);
 
-  // 如果已登录，直接跳转到游戏（使用useEffect避免渲染期间调用）
+  // 如果已登录且开场动画和登录页面都已完成,跳转到游戏
   useEffect(() => {
-    if (isAuthenticated && user && !showOpening) {
+    if (isAuthenticated && user && !showOpening && !showLogin) {
       setLocation("/game");
     }
-  }, [isAuthenticated, user, showOpening, setLocation]);
+  }, [isAuthenticated, user, showOpening, showLogin, setLocation]);
 
   const handleOpeningComplete = () => {
     setShowOpening(false);
-    setShowLogin(true);
+    // 如果已登录,直接跳转到游戏;否则显示登录选择页面
+    if (isAuthenticated && user) {
+      setLocation("/game");
+    } else {
+      setShowLogin(true);
+    }
   };
 
   const handleGuestLogin = () => {

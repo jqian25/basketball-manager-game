@@ -13,29 +13,26 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
   const [showSkip, setShowSkip] = useState(true);
 
   useEffect(() => {
-    // 星球大战文字滚动 - 60秒后自动进入下一阶段
-    const crawlTimer = setTimeout(() => {
-      if (stage === "crawl") setStage("player");
-    }, 60000);
-
-    // 球员投篮场景 - 3秒
-    const playerTimer = setTimeout(() => {
-      if (stage === "player") setStage("basketball");
-    }, 3000);
-
-    // 篮球飞行动画 - 2秒
-    const basketballTimer = setTimeout(() => {
-      if (stage === "basketball") {
+    if (stage === "crawl") {
+      // 星球大战文字滚动 - 15秒后自动进入下一阶段
+      const timer = setTimeout(() => {
+        setStage("player");
+      }, 15000);
+      return () => clearTimeout(timer);
+    } else if (stage === "player") {
+      // 球员投篮场景 - 5秒
+      const timer = setTimeout(() => {
+        setStage("basketball");
+      }, 5000);
+      return () => clearTimeout(timer);
+    } else if (stage === "basketball") {
+      // 篮球飞行动画 - 3秒
+      const timer = setTimeout(() => {
         setStage("complete");
         onComplete();
-      }
-    }, 2000);
-
-    return () => {
-      clearTimeout(crawlTimer);
-      clearTimeout(playerTimer);
-      clearTimeout(basketballTimer);
-    };
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
   }, [stage, onComplete]);
 
   const handleSkip = () => {

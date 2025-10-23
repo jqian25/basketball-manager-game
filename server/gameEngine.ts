@@ -25,11 +25,12 @@ export interface TeamConfig {
 
 // 比赛事件
 export interface GameEvent {
-  type: "shot" | "assist" | "rebound" | "steal" | "block" | "foul" | "timeout" | "quarter_end";
+  type: "shot" | "assist" | "rebound" | "steal" | "block" | "foul" | "timeout" | "quarter_end" | "turnover";
   time: number; // 剩余时间（秒）
   quarter: number;
   team: "home" | "away";
   player?: Player;
+  targetPlayer?: Player; // 被盖帽/被抢断的球员
   success?: boolean;
   points?: number;
   description: string;
@@ -46,6 +47,7 @@ export interface GameState {
   homeStats: TeamStats;
   awayStats: TeamStats;
   playerStats: Map<number, PlayerStats>;
+  playerStamina: Map<number, number>; // 球员体能（1-20）
 }
 
 // 球队统计
@@ -105,6 +107,12 @@ export class BasketballGameEngine {
   private initializeGameState(): GameState {
     const quarterDuration = (this.config.duration * 60) / this.config.quarters;
     
+    // 初始化球员体能
+    const playerStamina = new Map<number, number>();
+    [...this.homeTeam.players, ...this.awayTeam.players].forEach(p => {
+      playerStamina.set(p.id, p.stamina);
+    });
+    
     return {
       quarter: 1,
       timeRemaining: quarterDuration,
@@ -115,6 +123,7 @@ export class BasketballGameEngine {
       homeStats: this.initializeTeamStats(),
       awayStats: this.initializeTeamStats(),
       playerStats: new Map(),
+      playerStamina,
     };
   }
 
@@ -137,6 +146,21 @@ export class BasketballGameEngine {
   }
 
   /**
+   * 消耗体能
+   */
+  private consumeStamina(playerId: number, amount: number = 0.5) {
+    const current = this.state.playerStamina.get(playerId) || 10;
+    this.state.playerStamina.set(playerId, Math.max(1, current - amount));
+  }
+
+  /**
+   * 获取球员当前体能
+   */
+  private getPlayerStamina(playerId: number): number {
+    return this.state.playerStamina.get(playerId) || 10;
+  }
+
+  /**
    * 模拟一个回合
    */
   private simulatePossession(): GameEvent[] {
@@ -148,8 +172,54 @@ export class BasketballGameEngine {
     const shooter = this.selectShooter(attackingTeam);
     const defender = this.selectDefender(defendingTeam, shooter);
     
+    // 消耗体能
+    this.consumeStamina(shooter.id, 0.3);
+    this.consumeStamina(defender.id, 0.2);
+    
+    // 检查是否被抢断
+    const stealChance = this.calculateStealChance(defender, shooter);
+    if (Math.random() < stealChance) {
+      events.push({
+        type: "steal",
+        time: this.state.timeRemaining,
+        quarter: this.state.quarter,
+        team: this.state.possession === "home" ? "away" : "home",
+        player: defender,
+        targetPlayer: shooter,
+        description: `${defender.name} 抢断 ${shooter.name}！`,
+      });
+      
+      this.updateSteal(defender.id);
+      this.updateTurnover(shooter.id);
+      this.state.possession = this.state.possession === "home" ? "away" : "home";
+      
+      return events;
+    }
+    
     // 计算投篮类型概率
     const shotType = this.determineShotType(shooter, attackingTeam.tactics);
+    
+    // 检查是否被盖帽
+    const blockChance = this.calculateBlockChance(defender, shooter, shotType);
+    if (Math.random() < blockChance) {
+      events.push({
+        type: "block",
+        time: this.state.timeRemaining,
+        quarter: this.state.quarter,
+        team: this.state.possession === "home" ? "away" : "home",
+        player: defender,
+        targetPlayer: shooter,
+        description: `${defender.name} 盖帽 ${shooter.name}！`,
+      });
+      
+      this.updateBlock(defender.id);
+      this.updatePlayerStats(shooter.id, shotType, false);
+      
+      // 盖帽后球权归防守方
+      this.state.possession = this.state.possession === "home" ? "away" : "home";
+      
+      return events;
+    }
     
     // 计算投篮成功率
     const shotSuccess = this.calculateShotSuccess(shooter, defender, shotType);
@@ -174,7 +244,7 @@ export class BasketballGameEngine {
       this.updatePlayerStats(shooter.id, shotType, true);
       
       // 可能有助攻
-      if (Math.random() > 0.5) {
+      if (Math.random() > 0.4) {
         const assister = this.selectAssister(attackingTeam, shooter);
         if (assister) {
           events.push({
@@ -206,6 +276,7 @@ export class BasketballGameEngine {
       });
       
       this.updateRebound(rebounder.player.id);
+      this.consumeStamina(rebounder.player.id, 0.4);
       this.state.possession = rebounder.team;
     }
     
@@ -213,11 +284,46 @@ export class BasketballGameEngine {
   }
 
   /**
+   * 计算抢断概率
+   */
+  private calculateStealChance(defender: Player, attacker: Player): number {
+    const defenderStamina = this.getPlayerStamina(defender.id);
+    const attackerStamina = this.getPlayerStamina(attacker.id);
+    
+    const baseChance = 0.05;
+    const defenseBonus = (defender.defense / 20) * 0.08;
+    const attackerIQPenalty = (attacker.basketballIQ / 20) * 0.05;
+    const staminaFactor = (defenderStamina - attackerStamina) / 20 * 0.03;
+    
+    return Math.max(0, Math.min(0.15, baseChance + defenseBonus - attackerIQPenalty + staminaFactor));
+  }
+
+  /**
+   * 计算盖帽概率
+   */
+  private calculateBlockChance(defender: Player, shooter: Player, shotType: string): number {
+    // 三分球很难盖帽
+    if (shotType === "three") return 0.02;
+    
+    const defenderStamina = this.getPlayerStamina(defender.id);
+    
+    const baseChance = shotType === "layup" ? 0.08 : 0.05;
+    const athleticismBonus = (defender.athleticism / 20) * 0.1;
+    const defenseBonus = (defender.defense / 20) * 0.05;
+    const staminaFactor = (defenderStamina / 20) * 0.05;
+    
+    return Math.max(0, Math.min(0.2, baseChance + athleticismBonus + defenseBonus + staminaFactor));
+  }
+
+  /**
    * 选择投篮球员
    */
   private selectShooter(team: TeamConfig): Player {
-    // 基于得分能力加权随机选择
-    const weights = team.players.map(p => p.scoring);
+    // 基于得分能力和体能加权随机选择
+    const weights = team.players.map(p => {
+      const stamina = this.getPlayerStamina(p.id);
+      return p.scoring * (stamina / 20);
+    });
     const totalWeight = weights.reduce((a, b) => a + b, 0);
     let random = Math.random() * totalWeight;
     
@@ -238,7 +344,18 @@ export class BasketballGameEngine {
     // 选择位置相同或相近的防守球员
     const samePosition = team.players.filter(p => p.position === attacker.position);
     if (samePosition.length > 0) {
-      return samePosition[Math.floor(Math.random() * samePosition.length)];
+      // 基于防守能力选择
+      const weights = samePosition.map(p => p.defense);
+      const totalWeight = weights.reduce((a, b) => a + b, 0);
+      let random = Math.random() * totalWeight;
+      
+      for (let i = 0; i < samePosition.length; i++) {
+        random -= weights[i];
+        if (random <= 0) {
+          return samePosition[i];
+        }
+      }
+      return samePosition[0];
     }
     return team.players[Math.floor(Math.random() * team.players.length)];
   }
@@ -265,6 +382,9 @@ export class BasketballGameEngine {
    * 计算投篮成功率
    */
   private calculateShotSuccess(shooter: Player, defender: Player, shotType: string): boolean {
+    const shooterStamina = this.getPlayerStamina(shooter.id);
+    const defenderStamina = this.getPlayerStamina(defender.id);
+    
     // 基础命中率
     let baseRate = 0.45;
     
@@ -276,18 +396,19 @@ export class BasketballGameEngine {
     }
     
     // 进攻能力加成
-    const offenseBonus = (shooter.scoring / 20) * 0.2;
+    const offenseBonus = (shooter.scoring / 20) * 0.25;
     
     // 防守能力减成
-    const defensePenalty = (defender.defense / 20) * 0.15;
+    const defensePenalty = (defender.defense / 20) * 0.18;
     
     // 篮球智商影响
-    const iqBonus = (shooter.basketballIQ / 20) * 0.1;
+    const iqBonus = (shooter.basketballIQ / 20) * 0.12;
     
     // 体能影响（体能低会降低命中率）
-    const staminaPenalty = shooter.stamina < 5 ? 0.1 : 0;
+    const staminaPenalty = (20 - shooterStamina) / 20 * 0.15;
+    const defenderStaminaBonus = (20 - defenderStamina) / 20 * 0.08;
     
-    const finalRate = baseRate + offenseBonus - defensePenalty + iqBonus - staminaPenalty;
+    const finalRate = baseRate + offenseBonus - defensePenalty + iqBonus - staminaPenalty + defenderStaminaBonus;
     
     return Math.random() < Math.max(0.1, Math.min(0.9, finalRate));
   }
@@ -325,8 +446,11 @@ export class BasketballGameEngine {
     const reboundTeam = isDefensiveRebound ? defendingTeam : attackingTeam;
     const teamSide = reboundTeam === this.homeTeam ? "home" : "away";
     
-    // 基于运动能力选择篮板球员
-    const weights = reboundTeam.players.map(p => p.athleticism);
+    // 基于运动能力和体能选择篮板球员
+    const weights = reboundTeam.players.map(p => {
+      const stamina = this.getPlayerStamina(p.id);
+      return p.athleticism * (stamina / 20);
+    });
     const totalWeight = weights.reduce((a, b) => a + b, 0);
     let random = Math.random() * totalWeight;
     
@@ -390,17 +514,33 @@ export class BasketballGameEngine {
     
     if (shotType === "three") {
       stats.threePointersAttempted++;
+      const teamStats = this.getTeamStats(playerId);
+      teamStats.threePointersAttempted++;
+      
       if (success) {
         stats.threePointersMade++;
         stats.points += 3;
+        teamStats.threePointersMade++;
       }
     } else {
       stats.fieldGoalsAttempted++;
+      const teamStats = this.getTeamStats(playerId);
+      teamStats.fieldGoalsAttempted++;
+      
       if (success) {
         stats.fieldGoalsMade++;
         stats.points += 2;
+        teamStats.fieldGoalsMade++;
       }
     }
+  }
+
+  /**
+   * 获取球员所属球队的统计
+   */
+  private getTeamStats(playerId: number): TeamStats {
+    const isHome = this.homeTeam.players.some(p => p.id === playerId);
+    return isHome ? this.state.homeStats : this.state.awayStats;
   }
 
   /**
@@ -428,6 +568,7 @@ export class BasketballGameEngine {
     }
     
     this.state.playerStats.get(playerId)!.assists++;
+    this.getTeamStats(playerId).assists++;
   }
 
   /**
@@ -455,6 +596,91 @@ export class BasketballGameEngine {
     }
     
     this.state.playerStats.get(playerId)!.rebounds++;
+    this.getTeamStats(playerId).rebounds++;
+  }
+
+  /**
+   * 更新抢断
+   */
+  private updateSteal(playerId: number) {
+    if (!this.state.playerStats.has(playerId)) {
+      this.state.playerStats.set(playerId, {
+        playerId,
+        minutes: 0,
+        points: 0,
+        fieldGoalsMade: 0,
+        fieldGoalsAttempted: 0,
+        threePointersMade: 0,
+        threePointersAttempted: 0,
+        freeThrowsMade: 0,
+        freeThrowsAttempted: 0,
+        rebounds: 0,
+        assists: 0,
+        steals: 0,
+        blocks: 0,
+        turnovers: 0,
+        fouls: 0,
+      });
+    }
+    
+    this.state.playerStats.get(playerId)!.steals++;
+    this.getTeamStats(playerId).steals++;
+  }
+
+  /**
+   * 更新盖帽
+   */
+  private updateBlock(playerId: number) {
+    if (!this.state.playerStats.has(playerId)) {
+      this.state.playerStats.set(playerId, {
+        playerId,
+        minutes: 0,
+        points: 0,
+        fieldGoalsMade: 0,
+        fieldGoalsAttempted: 0,
+        threePointersMade: 0,
+        threePointersAttempted: 0,
+        freeThrowsMade: 0,
+        freeThrowsAttempted: 0,
+        rebounds: 0,
+        assists: 0,
+        steals: 0,
+        blocks: 0,
+        turnovers: 0,
+        fouls: 0,
+      });
+    }
+    
+    this.state.playerStats.get(playerId)!.blocks++;
+    this.getTeamStats(playerId).blocks++;
+  }
+
+  /**
+   * 更新失误
+   */
+  private updateTurnover(playerId: number) {
+    if (!this.state.playerStats.has(playerId)) {
+      this.state.playerStats.set(playerId, {
+        playerId,
+        minutes: 0,
+        points: 0,
+        fieldGoalsMade: 0,
+        fieldGoalsAttempted: 0,
+        threePointersMade: 0,
+        threePointersAttempted: 0,
+        freeThrowsMade: 0,
+        freeThrowsAttempted: 0,
+        rebounds: 0,
+        assists: 0,
+        steals: 0,
+        blocks: 0,
+        turnovers: 0,
+        fouls: 0,
+      });
+    }
+    
+    this.state.playerStats.get(playerId)!.turnovers++;
+    this.getTeamStats(playerId).turnovers++;
   }
 
   /**
@@ -466,16 +692,11 @@ export class BasketballGameEngine {
     while (this.state.quarter <= this.config.quarters) {
       while (this.state.timeRemaining > 0) {
         // 模拟一个回合（约24秒）
-        const possessionTime = 24;
+        const possessionTime = Math.min(24, this.state.timeRemaining);
         const events = this.simulatePossession();
         
         this.state.events.push(...events);
         this.state.timeRemaining -= possessionTime;
-        
-        // 随机事件（抢断、盖帽等）
-        if (Math.random() < 0.1) {
-          // TODO: 添加更多随机事件
-        }
       }
       
       // 节结束
@@ -490,6 +711,15 @@ export class BasketballGameEngine {
         
         this.state.quarter++;
         this.state.timeRemaining = quarterDuration;
+        
+        // 节间休息恢复体能
+        this.state.playerStamina.forEach((stamina, playerId) => {
+          const player = [...this.homeTeam.players, ...this.awayTeam.players].find(p => p.id === playerId);
+          if (player) {
+            const recovery = player.stamina * 0.3; // 恢复30%
+            this.state.playerStamina.set(playerId, Math.min(player.stamina, stamina + recovery));
+          }
+        });
       } else {
         break;
       }

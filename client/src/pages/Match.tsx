@@ -61,7 +61,7 @@ export default function Match() {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <Card className="h-full hover:shadow-2xl transition-all duration-300 cursor-pointer hover:scale-105 border-2 border-blue-200"
-                onClick={() => setMatchMode("guest")}
+                onClick={() => setLocation("/match/quick")}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-blue-600/10 rounded-lg"></div>
                 
@@ -194,7 +194,7 @@ export default function Match() {
     );
   }
 
-  // 比赛进行界面（待实现）
+  // 比赛进行界面（完整模式）
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 p-8">
       <div className="max-w-7xl mx-auto">
@@ -208,13 +208,13 @@ export default function Match() {
           返回模式选择
         </Button>
 
-        {/* 比赛界面占位 */}
+        {/* 完整比赛界面占位 */}
         <div className="text-center text-white">
           <h1 className="text-5xl font-bold mb-4">
-            {matchMode === "guest" ? "快速比赛" : "完整比赛"}
+            完整比赛
           </h1>
           <p className="text-xl text-gray-300">
-            比赛引擎开发中...
+            48分钟 NBA 完整规则比赛引擎开发中...
           </p>
         </div>
       </div>
