@@ -35,6 +35,10 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+  
+  // AI chat API
+  const aiRouter = (await import("../routes/ai")).default;
+  app.use("/api/ai", aiRouter);
   // tRPC API
   app.use(
     "/api/trpc",

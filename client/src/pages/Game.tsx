@@ -14,6 +14,7 @@ import {
   LogOut,
   Play,
   Home,
+  Map,
 } from "lucide-react";
 
 export default function Game() {
@@ -73,6 +74,14 @@ export default function Game() {
       description: "查看球队和球员数据",
       color: "from-pink-500 to-pink-600",
       path: "/stats",
+      available: isAuthenticated,
+    },
+    {
+      icon: Map,
+      title: "开放世界",
+      description: "探索日本，体验RPG冒险",
+      color: "from-indigo-500 to-indigo-600",
+      path: "/openworld",
       available: isAuthenticated,
     },
   ];

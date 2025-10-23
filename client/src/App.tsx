@@ -10,6 +10,7 @@ import Match from "./pages/Match";
 import MatchPlay from "./pages/MatchPlay";
 import PlayerManage from "./pages/PlayerManage";
 import QuickMatch from "./pages/QuickMatch";
+import OpenWorld from "./pages/OpenWorld";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -21,6 +22,7 @@ function Router() {
       <Route path={"/match/quick"} component={QuickMatch} />
       <Route path={"/match/play"} component={MatchPlay} />
       <Route path={"/players"} component={PlayerManage} />
+      <Route path={"/openworld"} component={OpenWorld} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

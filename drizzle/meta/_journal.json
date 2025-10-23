@@ -15,6 +15,13 @@
       "when": 1761184296110,
       "tag": "0001_quick_ultragirl",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1761206502194,
+      "tag": "0002_abandoned_jimmy_woo",
+      "breakpoints": true
     }
   ]
 }

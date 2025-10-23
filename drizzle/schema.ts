@@ -239,3 +239,68 @@ export const leagueStandings = mysqlTable("leagueStandings", {
 export type LeagueStanding = typeof leagueStandings.$inferSelect;
 export type InsertLeagueStanding = typeof leagueStandings.$inferInsert;
 
+
+
+/**
+ * NPC市场表 - 可购买的NPC列表
+ */
+export const npcMarketplace = mysqlTable("npcMarketplace", {
+  id: int("id").autoincrement().primaryKey(),
+  npcId: varchar("npcId", { length: 100 }).notNull().unique(),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  category: mysqlEnum("category", ["student", "teacher", "coach", "vendor", "celebrity"]).notNull(),
+  basePrice: float("basePrice").notNull(),
+  premiumPrice: float("premiumPrice"),
+  defaultPersonality: text("defaultPersonality"),
+  spriteSheet: text("spriteSheet").notNull(),
+  previewImage: text("previewImage"),
+  isAvailable: boolean("isAvailable").default(true),
+  stockLimit: int("stockLimit"),
+  soldCount: int("soldCount").default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type NpcMarketplace = typeof npcMarketplace.$inferSelect;
+export type InsertNpcMarketplace = typeof npcMarketplace.$inferInsert;
+
+/**
+ * 用户拥有的NPC表
+ */
+export const userNpcs = mysqlTable("userNpcs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  npcMarketplaceId: int("npcMarketplaceId").notNull(),
+  npcId: varchar("npcId", { length: 100 }).notNull(),
+  customName: varchar("customName", { length: 100 }),
+  isPremium: boolean("isPremium").default(false),
+  aiConfig: text("aiConfig"), // JSON
+  placement: text("placement"), // JSON
+  interactionCount: int("interactionCount").default(0),
+  lastInteractionAt: timestamp("lastInteractionAt"),
+  purchasedAt: timestamp("purchasedAt").defaultNow().notNull(),
+  isActive: boolean("isActive").default(true),
+});
+
+export type UserNpc = typeof userNpcs.$inferSelect;
+export type InsertUserNpc = typeof userNpcs.$inferInsert;
+
+/**
+ * 地图自定义对象表
+ */
+export const mapCustomObjects = mysqlTable("mapCustomObjects", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  mapId: varchar("mapId", { length: 100 }).notNull(),
+  objectType: varchar("objectType", { length: 50 }).notNull(),
+  objectData: text("objectData").notNull(), // JSON
+  isPurchased: boolean("isPurchased").default(false),
+  purchasePrice: float("purchasePrice"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  isActive: boolean("isActive").default(true),
+});
+
+export type MapCustomObject = typeof mapCustomObjects.$inferSelect;
+export type InsertMapCustomObject = typeof mapCustomObjects.$inferInsert;
+
