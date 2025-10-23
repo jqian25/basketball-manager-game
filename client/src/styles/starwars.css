@@ -51,6 +51,8 @@
   margin: 0 auto;
   color: #feda4a;
   line-height: 1.5;
+  z-index: 10;
+  text-shadow: 0 0 10px rgba(254, 218, 74, 0.8), 0 0 20px rgba(254, 218, 74, 0.6);
 }
 
 .starwars-title {

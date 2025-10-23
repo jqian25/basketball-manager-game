@@ -87,13 +87,19 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className="fixed inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url(/bg-romantic-court.png)" }}
+          className="fixed inset-0 bg-black"
         >
-          {/* 樱花粒子效果 */}
-          <div className="cherry-blossoms"></div>
+          {/* 动漫风格开场视频 */}
+          <video
+            className="w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+          >
+            <source src="/opening-anime.mp4" type="video/mp4" />
+          </video>
           
-          {/* 球员投篮特写 - 这里会放置生成的球员图片 */}
+          {/* 球员投篮特写 */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
             initial={{ scale: 1.2, opacity: 0 }}
