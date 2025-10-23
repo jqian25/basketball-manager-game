@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Play, Pause, FastForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import PixelMatchView from "@/components/PixelMatchView";
+import { Monitor, Gamepad2 } from "lucide-react";
 
 // 模拟比赛事件
 interface GameEvent {
@@ -114,6 +116,8 @@ export default function QuickMatch() {
   const [commentary, setCommentary] = useState<string>("");
   const [crowdReaction, setCrowdReaction] = useState<string>("");
   const [cameraAngle, setCameraAngle] = useState<"wide" | "close" | "hoop" | "crowd">("wide");
+  const [viewMode, setViewMode] = useState<"cinematic" | "pixel">("cinematic"); // 新增：视角模式
+  const [showCheerleader, setShowCheerleader] = useState(false); // 新增：啦啦队开场
   
   const eventIdCounter = useRef(0);
   const eventsEndRef = useRef<HTMLDivElement>(null);
@@ -300,10 +304,18 @@ export default function QuickMatch() {
   };
 
   const handleStart = () => {
-    setGameStarted(true);
-    setIsPaused(false);
-    setCommentary("比赛开始！双方球员进入场地！");
-    setTimeout(() => setCommentary(""), 3000);
+    // 新增：先显示啦啦队开场
+    setShowCheerleader(true);
+    setCommentary("欢迎来到篮球比赛现场！让我们为啦啦队的精彩表演鼓掌！");
+    
+    // 5秒后关闭啦啦队，开始比赛
+    setTimeout(() => {
+      setShowCheerleader(false);
+      setGameStarted(true);
+      setIsPaused(false);
+      setCommentary("比赛开始！双方球员进入场地！");
+      setTimeout(() => setCommentary(""), 3000);
+    }, 5000);
   };
 
   const handlePause = () => {
@@ -344,6 +356,35 @@ export default function QuickMatch() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-200 via-blue-100 to-orange-100 relative overflow-hidden">
+      {/* 新增：啦啦队开场全屏显示 */}
+      <AnimatePresence>
+        {showCheerleader && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+          >
+            <img
+              src="/cheerleader-performance.png"
+              alt="Cheerleader Performance"
+              className="w-full h-full object-cover"
+            />
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="absolute bottom-20 left-0 right-0 text-center"
+            >
+              <div className="text-5xl font-bold text-white drop-shadow-2xl">
+                🎉 啦啦队热场表演 🎉
+              </div>
+              <div className="text-2xl text-yellow-400 mt-4">
+                比赛即将开始...
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* 新海诚风格背景 */}
       <div 
         className="absolute inset-0 opacity-40"
@@ -628,9 +669,42 @@ export default function QuickMatch() {
                     <FastForward className="w-5 h-5 mr-2" />
                     {speed}x 倍速
                   </Button>
+                  
+                  {/* 新增：视角切换按钮 */}
+                  <Button
+                    onClick={() => setViewMode(prev => prev === "cinematic" ? "pixel" : "cinematic")}
+                    size="lg"
+                    variant="outline"
+                    className="text-lg px-8 py-6"
+                  >
+                    {viewMode === "cinematic" ? (
+                      <>
+                        <Gamepad2 className="w-5 h-5 mr-2" />
+                        像素模式
+                      </>
+                    ) : (
+                      <>
+                        <Monitor className="w-5 h-5 mr-2" />
+                        电影模式
+                      </>
+                    )}
+                  </Button>
                 </>
               )}
             </div>
+            
+            {/* 新增：像素动画视图 */}
+            {gameStarted && viewMode === "pixel" && (
+              <Card className="bg-black/90 backdrop-blur-sm shadow-2xl overflow-hidden mt-6">
+                <PixelMatchView
+                  homeScore={homeScore}
+                  awayScore={awayScore}
+                  quarter={quarter}
+                  timeRemaining={timeRemaining}
+                  currentEvent={currentEvent?.description}
+                />
+              </Card>
+            )}
           </div>
 
           {/* 右侧：事件日志 */}
