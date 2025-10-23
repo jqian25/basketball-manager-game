@@ -88,7 +88,7 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
           className="fixed inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url(/bg-court-dreamy.png)" }}
+          style={{ backgroundImage: "url(/bg-romantic-court.png)" }}
         >
           {/* 樱花粒子效果 */}
           <div className="cherry-blossoms"></div>
