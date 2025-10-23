@@ -5,23 +5,6 @@ import { ArrowLeft, Play, Pause, FastForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-// 模拟球员数据
-const createMockPlayer = (id: number, name: string, position: string, team: "home" | "away") => ({
-  id,
-  name,
-  position,
-  scoring: Math.floor(Math.random() * 10) + 10,
-  passing: Math.floor(Math.random() * 10) + 10,
-  defense: Math.floor(Math.random() * 10) + 10,
-  athleticism: Math.floor(Math.random() * 10) + 10,
-  basketballIQ: Math.floor(Math.random() * 10) + 10,
-  stamina: Math.floor(Math.random() * 10) + 10,
-  threePointTendency: Math.random() * 5 + 3,
-  midRangeTendency: Math.random() * 5 + 3,
-  driveTendency: Math.random() * 5 + 3,
-  team,
-});
-
 // 模拟比赛事件
 interface GameEvent {
   id: number;
@@ -34,7 +17,86 @@ interface GameEvent {
   success?: boolean;
   points?: number;
   description: string;
+  shotType?: "three" | "mid" | "layup" | "dunk";
 }
+
+// 解说员评论库
+const commentaryTemplates = {
+  shot_success_three: [
+    "漂亮！三分球空心入网！",
+    "太准了！三分球命中！",
+    "完美的三分球！",
+    "这球投得真漂亮！三分命中！",
+    "神准！三分球！"
+  ],
+  shot_success_dunk: [
+    "暴扣！势不可挡！",
+    "太震撼了！扣篮得分！",
+    "霸气的扣篮！",
+    "这记扣篮太精彩了！",
+    "力量与美感的完美结合！扣篮得分！"
+  ],
+  shot_success_normal: [
+    "进了！两分入账！",
+    "漂亮的投篮！",
+    "球进了！",
+    "稳稳命中！",
+    "得分！"
+  ],
+  shot_miss: [
+    "可惜！没进！",
+    "哎呀，差一点！",
+    "这球没投进！",
+    "遗憾，没能命中！",
+    "打铁了！"
+  ],
+  block: [
+    "盖帽！精彩的防守！",
+    "被盖了！",
+    "太棒了！这个盖帽！",
+    "防守球员及时赶到！盖帽！",
+    "漂亮的封盖！"
+  ],
+  steal: [
+    "抢断成功！",
+    "漂亮的抢断！",
+    "断球了！",
+    "防守球员判断准确！抢断！",
+    "太快了！抢断成功！"
+  ],
+  rebound: [
+    "篮板球！",
+    "抢到篮板！",
+    "漂亮的篮板球！",
+    "卡位成功！拿下篮板！",
+    "篮板球被抢到了！"
+  ],
+  assist: [
+    "精彩的助攻！",
+    "漂亮的传球！",
+    "完美的配合！",
+    "这个助攻太棒了！",
+    "团队配合！助攻得分！"
+  ],
+  score_lead: [
+    "比分拉开了！",
+    "领先优势扩大！",
+    "分差越来越大！",
+    "主队打出了气势！",
+    "客队奋起直追！"
+  ]
+};
+
+// 观众反应库
+const crowdReactions = [
+  "哇！！！",
+  "太厉害了！",
+  "好球！",
+  "加油！",
+  "太帅了！",
+  "不可思议！",
+  "Amazing！"
+];
 
 export default function QuickMatch() {
   const [, setLocation] = useLocation();
@@ -48,6 +110,10 @@ export default function QuickMatch() {
   const [awayScore, setAwayScore] = useState(0);
   const [events, setEvents] = useState<GameEvent[]>([]);
   const [currentEvent, setCurrentEvent] = useState<GameEvent | null>(null);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [commentary, setCommentary] = useState<string>("");
+  const [crowdReaction, setCrowdReaction] = useState<string>("");
+  const [cameraAngle, setCameraAngle] = useState<"wide" | "close" | "hoop" | "crowd">("wide");
   
   const eventIdCounter = useRef(0);
   const eventsEndRef = useRef<HTMLDivElement>(null);
@@ -78,6 +144,7 @@ export default function QuickMatch() {
             team: "home",
             description: "比赛结束！",
           });
+          setCommentary("比赛结束！感谢各位观众的观看！");
         }
         
         return Math.max(0, newTime);
@@ -86,6 +153,49 @@ export default function QuickMatch() {
 
     return () => clearInterval(interval);
   }, [gameStarted, isPaused, speed, timeRemaining]);
+
+  const getRandomItem = <T,>(array: T[]): T => {
+    return array[Math.floor(Math.random() * array.length)];
+  };
+
+  const generateCommentary = (event: GameEvent): string => {
+    switch (event.type) {
+      case "shot":
+        if (event.success) {
+          if (event.shotType === "three") {
+            return getRandomItem(commentaryTemplates.shot_success_three);
+          } else if (event.shotType === "dunk") {
+            return getRandomItem(commentaryTemplates.shot_success_dunk);
+          } else {
+            return getRandomItem(commentaryTemplates.shot_success_normal);
+          }
+        } else {
+          return getRandomItem(commentaryTemplates.shot_miss);
+        }
+      case "block":
+        return getRandomItem(commentaryTemplates.block);
+      case "steal":
+        return getRandomItem(commentaryTemplates.steal);
+      case "rebound":
+        return getRandomItem(commentaryTemplates.rebound);
+      case "assist":
+        return getRandomItem(commentaryTemplates.assist);
+      default:
+        return "";
+    }
+  };
+
+  const selectCameraAngle = (event: GameEvent): "wide" | "close" | "hoop" | "crowd" => {
+    if (event.type === "shot" && event.success) {
+      return Math.random() > 0.5 ? "close" : "hoop";
+    } else if (event.type === "block" || event.type === "steal") {
+      return "close";
+    } else if (event.points && event.points >= 3) {
+      return "crowd";
+    } else {
+      return "wide";
+    }
+  };
 
   const addEvent = (eventData: Partial<GameEvent>) => {
     const event: GameEvent = {
@@ -100,11 +210,27 @@ export default function QuickMatch() {
     
     setEvents(prev => [...prev, event]);
     setCurrentEvent(event);
+    setShowAnimation(true);
     
-    // 3秒后清除当前事件动画
+    // 生成解说
+    const comment = generateCommentary(event);
+    setCommentary(comment);
+    
+    // 如果得分，显示观众反应
+    if (event.success && event.points) {
+      setCrowdReaction(getRandomItem(crowdReactions));
+      setTimeout(() => setCrowdReaction(""), 2000);
+    }
+    
+    // 选择镜头角度
+    setCameraAngle(selectCameraAngle(event));
+    
+    // 5秒后清除当前事件动画
     setTimeout(() => {
+      setShowAnimation(false);
       setCurrentEvent(null);
-    }, 3000);
+      setCommentary("");
+    }, 5000);
   };
 
   const generateRandomEvent = () => {
@@ -117,15 +243,23 @@ export default function QuickMatch() {
     
     let description = "";
     let points = 0;
+    let shotType: "three" | "mid" | "layup" | "dunk" | undefined;
     
     switch (type) {
       case "shot":
-        const shotTypes = ["三分球", "中距离", "上篮"];
-        const shotType = shotTypes[Math.floor(Math.random() * shotTypes.length)];
-        const success = Math.random() > 0.5;
+        const shotTypes: Array<"three" | "mid" | "layup" | "dunk"> = ["three", "mid", "layup", "dunk"];
+        shotType = shotTypes[Math.floor(Math.random() * shotTypes.length)];
+        const success = Math.random() > 0.4;
+        
+        const shotTypeText = {
+          three: "三分球",
+          mid: "中距离",
+          layup: "上篮",
+          dunk: "扣篮"
+        }[shotType];
         
         if (success) {
-          points = shotType === "三分球" ? 3 : 2;
+          points = shotType === "three" ? 3 : 2;
           if (team === "home") {
             setHomeScore(prev => prev + points);
           } else {
@@ -133,8 +267,8 @@ export default function QuickMatch() {
           }
         }
         
-        description = `${playerName} ${shotType} ${success ? "命中" : "不中"}！`;
-        addEvent({ type, team, player: { name: playerName }, success, points, description });
+        description = `${playerName} ${shotTypeText} ${success ? "命中" : "不中"}！`;
+        addEvent({ type, team, player: { name: playerName }, success, points, description, shotType });
         break;
         
       case "assist":
@@ -168,6 +302,8 @@ export default function QuickMatch() {
   const handleStart = () => {
     setGameStarted(true);
     setIsPaused(false);
+    setCommentary("比赛开始！双方球员进入场地！");
+    setTimeout(() => setCommentary(""), 3000);
   };
 
   const handlePause = () => {
@@ -178,13 +314,41 @@ export default function QuickMatch() {
     setSpeed(prev => (prev === 1 ? 2 : prev === 2 ? 4 : 1));
   };
 
+  // 获取动画图片
+  const getAnimationImage = () => {
+    if (!currentEvent) return null;
+    
+    switch (currentEvent.type) {
+      case "shot":
+        if (currentEvent.success) {
+          if (currentEvent.shotType === "dunk") {
+            return "/player-dunking.png";
+          } else if (currentEvent.shotType === "three") {
+            return "/player-shooting.png";
+          } else {
+            return "/player-shooting.png";
+          }
+        }
+        return null;
+        
+      case "block":
+        return "/player-defense.png";
+        
+      case "steal":
+        return "/player-defense.png";
+        
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-200 via-blue-100 to-orange-100 relative overflow-hidden">
       {/* 新海诚风格背景 */}
       <div 
         className="absolute inset-0 opacity-40"
         style={{
-          backgroundImage: "url('/match-court-bg.png'), linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #FFF5E6 100%)",
+          backgroundImage: "linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #FFF5E6 100%)",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -206,6 +370,154 @@ export default function QuickMatch() {
           />
         ))}
       </div>
+
+      {/* 全屏动画层（灌篮高手风格） */}
+      <AnimatePresence>
+        {showAnimation && currentEvent && getAnimationImage() && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
+          >
+            {/* 速度线背景（灌篮高手风格） */}
+            {cameraAngle === "close" && (
+              <div className="absolute inset-0 overflow-hidden">
+                {[...Array(30)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute h-0.5 bg-white"
+                    style={{
+                      top: `${Math.random() * 100}%`,
+                      left: 0,
+                      width: "100%",
+                      opacity: 0.3,
+                    }}
+                    initial={{ x: "100vw" }}
+                    animate={{ x: "-100vw" }}
+                    transition={{
+                      duration: 0.3,
+                      delay: i * 0.01,
+                      ease: "linear",
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* 球员动作特写 */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.div
+                initial={{ 
+                  scale: cameraAngle === "close" ? 0.5 : 0.8, 
+                  opacity: 0,
+                  x: cameraAngle === "close" ? -200 : 0,
+                  y: cameraAngle === "hoop" ? 200 : 0,
+                }}
+                animate={{ 
+                  scale: cameraAngle === "close" ? 1.5 : 1.2, 
+                  opacity: 1,
+                  x: 0,
+                  y: 0,
+                }}
+                exit={{ 
+                  scale: cameraAngle === "close" ? 2 : 1.5, 
+                  opacity: 0 
+                }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="relative"
+              >
+                <img
+                  src={getAnimationImage()!}
+                  alt="动作"
+                  className={`object-contain drop-shadow-2xl ${
+                    cameraAngle === "close" ? "max-h-[90vh]" : "max-h-[70vh]"
+                  }`}
+                />
+                
+                {/* 闪光效果 */}
+                {currentEvent.success && (
+                  <motion.div
+                    initial={{ scale: 0, opacity: 1 }}
+                    animate={{ scale: 4, opacity: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="absolute inset-0 bg-white rounded-full blur-3xl"
+                  />
+                )}
+              </motion.div>
+            </div>
+
+            {/* 观众席（得分时） */}
+            {cameraAngle === "crowd" && currentEvent.success && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute bottom-0 left-0 right-0 h-96"
+                style={{
+                  backgroundImage: "url('/crowd-cheering.png')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "top",
+                }}
+              />
+            )}
+
+            {/* 观众反应文字 */}
+            {crowdReaction && (
+              <motion.div
+                initial={{ scale: 0, rotate: -20 }}
+                animate={{ scale: 1, rotate: 0 }}
+                exit={{ scale: 0, rotate: 20 }}
+                className="absolute top-20 right-20"
+              >
+                <div className="text-6xl font-black text-yellow-400 drop-shadow-2xl transform -rotate-12">
+                  {crowdReaction}
+                </div>
+              </motion.div>
+            )}
+
+            {/* 得分特效 */}
+            {currentEvent.points && (
+              <motion.div
+                initial={{ scale: 0, y: 100, rotate: -45 }}
+                animate={{ scale: 2, y: 0, rotate: 0 }}
+                exit={{ scale: 3, opacity: 0, y: -100 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="absolute top-1/3 left-1/2 transform -translate-x-1/2"
+              >
+                <div className="relative">
+                  {/* 阴影 */}
+                  <div className="absolute inset-0 text-9xl font-black text-black blur-lg opacity-50 transform translate-x-3 translate-y-3">
+                    +{currentEvent.points}
+                  </div>
+                  {/* 主文字 */}
+                  <div className="relative text-9xl font-black text-yellow-400 drop-shadow-2xl">
+                    +{currentEvent.points}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 解说员字幕（灌篮高手风格） */}
+      <AnimatePresence>
+        {commentary && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            className="fixed bottom-32 left-0 right-0 z-40 flex justify-center pointer-events-none"
+          >
+            <div className="bg-black/80 backdrop-blur-sm px-8 py-4 rounded-full border-2 border-orange-500">
+              <div className="text-2xl md:text-3xl font-bold text-white text-center">
+                <span className="text-orange-500">【解说】</span> {commentary}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="relative z-10 container mx-auto px-4 py-6">
         {/* 返回按钮 */}
@@ -253,9 +565,9 @@ export default function QuickMatch() {
                       <motion.div 
                         className="text-7xl font-bold text-orange-500"
                         key={homeScore}
-                        initial={{ scale: 1.3 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.3 }}
+                        initial={{ scale: 1.5, color: "#FFD700" }}
+                        animate={{ scale: 1, color: "#F97316" }}
+                        transition={{ duration: 0.5 }}
                       >
                         {homeScore}
                       </motion.div>
@@ -272,9 +584,9 @@ export default function QuickMatch() {
                       <motion.div 
                         className="text-7xl font-bold text-blue-500"
                         key={awayScore}
-                        initial={{ scale: 1.3 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.3 }}
+                        initial={{ scale: 1.5, color: "#FFD700" }}
+                        animate={{ scale: 1, color: "#3B82F6" }}
+                        transition={{ duration: 0.5 }}
                       >
                         {awayScore}
                       </motion.div>
@@ -318,75 +630,6 @@ export default function QuickMatch() {
                   </Button>
                 </>
               )}
-            </div>
-
-            {/* 当前事件动画 */}
-            <AnimatePresence>
-              {currentEvent && (
-                <motion.div
-                  initial={{ opacity: 0, y: 50, scale: 0.8 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -50, scale: 0.8 }}
-                  className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
-                >
-                  <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-8 shadow-2xl">
-                    <div className="text-4xl font-bold text-center">
-                      {currentEvent.description}
-                    </div>
-                    {currentEvent.points && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="text-6xl font-bold text-center mt-4 text-yellow-300"
-                      >
-                        +{currentEvent.points}
-                      </motion.div>
-                    )}
-                  </Card>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* 球员动作动画区域 */}
-            <div className="relative h-64 bg-gradient-to-b from-transparent to-white/50 rounded-xl overflow-hidden">
-              <AnimatePresence>
-                {currentEvent?.type === "shot" && currentEvent.success && (
-                  <motion.img
-                    key="shooting"
-                    src="/player-shooting.png"
-                    alt="投篮"
-                    className="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-full object-contain"
-                    initial={{ opacity: 0, scale: 0.5, y: 100 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.5, y: -100 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                )}
-                {currentEvent?.type === "block" && (
-                  <motion.img
-                    key="defense"
-                    src="/player-defense.png"
-                    alt="防守"
-                    className="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-full object-contain"
-                    initial={{ opacity: 0, x: -200 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 200 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                )}
-                {currentEvent?.type === "shot" && currentEvent.success && currentEvent.points === 2 && (
-                  <motion.img
-                    key="dunking"
-                    src="/player-dunking.png"
-                    alt="扣篮"
-                    className="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-full object-contain"
-                    initial={{ opacity: 0, y: -200 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 200 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                )}
-              </AnimatePresence>
             </div>
           </div>
 
@@ -437,21 +680,6 @@ export default function QuickMatch() {
             </Card>
           </div>
         </div>
-
-        {/* 观众欢呼背景 */}
-        {currentEvent?.success && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.3 }}
-            exit={{ opacity: 0 }}
-            className="fixed bottom-0 left-0 right-0 h-48 pointer-events-none"
-            style={{
-              backgroundImage: "url('/crowd-cheering.png')",
-              backgroundSize: "cover",
-              backgroundPosition: "top",
-            }}
-          />
-        )}
       </div>
     </div>
   );
