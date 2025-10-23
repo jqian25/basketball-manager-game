@@ -1,20 +1,4 @@
-/* Star Wars Opening Crawl Effect */
-@keyframes crawl {
-  0% {
-    transform: rotateX(20deg) translateZ(0) translateY(100vh);
-    opacity: 0;
-  }
-  5% {
-    opacity: 1;
-  }
-  95% {
-    opacity: 1;
-  }
-  100% {
-    transform: rotateX(20deg) translateZ(-3500px) translateY(-150vh);
-    opacity: 0;
-  }
-}
+/* Star Wars Opening Crawl Effect - 完全重写版本 */
 
 .starwars-container {
   position: fixed;
@@ -27,86 +11,127 @@
   background-size: cover;
   background-position: center;
   overflow: hidden;
-  perspective: 400px;
+  /* 3D透视效果 */
+  perspective: 500px;
   perspective-origin: 50% 50%;
 }
 
+/* 背景遮罩 */
 .starwars-container::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   z-index: 1;
 }
 
+/* 星球大战文字滚动 */
 .starwars-crawl {
   position: absolute;
   left: 50%;
-  top: 100%;
+  bottom: 0;
+  width: 80%;
+  max-width: 800px;
   transform: translateX(-50%);
   transform-origin: 50% 100%;
-  animation: crawl 60s linear forwards;
-  font-size: 500%;
-  font-weight: 600;
-  text-align: justify;
-  width: 80%;
+  z-index: 100;
+  
+  /* 金色文字 */
   color: #feda4a;
-  line-height: 1.5;
-  z-index: 10;
-  text-shadow: 0 0 10px rgba(254, 218, 74, 0.8), 0 0 20px rgba(254, 218, 74, 0.6), 0 0 30px rgba(254, 218, 74, 0.4);
+  font-size: clamp(16px, 3vw, 28px);
+  font-weight: 600;
+  line-height: 1.8;
+  text-align: justify;
+  
+  /* 发光效果 */
+  text-shadow: 
+    0 0 10px rgba(254, 218, 74, 0.8),
+    0 0 20px rgba(254, 218, 74, 0.6),
+    0 0 30px rgba(254, 218, 74, 0.4);
+  
+  /* 3D滚动动画 - 15秒完成 */
+  animation: crawl 15s linear forwards;
 }
 
+@keyframes crawl {
+  0% {
+    transform: translateX(-50%) rotateX(20deg) translateZ(0) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) rotateX(20deg) translateZ(-2500px) translateY(-6000px);
+    opacity: 0;
+  }
+}
+
+/* 标题 */
 .starwars-title {
-  font-size: 700%;
+  font-size: clamp(32px, 6vw, 64px);
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 40px;
   font-weight: 700;
   color: #feda4a;
   text-transform: uppercase;
-  letter-spacing: 6px;
+  letter-spacing: 8px;
+  text-shadow: 
+    0 0 20px rgba(254, 218, 74, 1),
+    0 0 40px rgba(254, 218, 74, 0.8),
+    0 0 60px rgba(254, 218, 74, 0.6);
 }
 
+/* 段落间距 */
+.starwars-crawl p {
+  margin-bottom: 30px;
+}
+
+/* 跳过按钮 */
 .starwars-skip {
   position: fixed;
   bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
+  
   background: rgba(254, 218, 74, 0.2);
   border: 2px solid #feda4a;
   color: #feda4a;
-  padding: 12px 32px;
+  padding: 14px 36px;
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
   border-radius: 8px;
   backdrop-filter: blur(10px);
+  
+  transition: all 0.3s ease;
+  
+  text-shadow: 0 0 10px rgba(254, 218, 74, 0.8);
 }
 
 .starwars-skip:hover {
   background: rgba(254, 218, 74, 0.4);
   transform: translateX(-50%) scale(1.05);
-  box-shadow: 0 0 20px rgba(254, 218, 74, 0.5);
+  box-shadow: 0 0 30px rgba(254, 218, 74, 0.6);
 }
 
-/* Stars background */
+/* 星空背景 */
 .stars {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: transparent;
+  z-index: 2;
+  pointer-events: none;
 }
 
-.stars::before,
-.stars::after {
+/* 创建随机星星 */
+.stars::before {
   content: "";
   position: absolute;
   width: 2px;
   height: 2px;
   background: #fff;
+  border-radius: 50%;
   box-shadow: 
     100px 200px #fff, 200px 100px #fff, 300px 300px #fff,
     400px 150px #fff, 500px 250px #fff, 600px 100px #fff,
@@ -114,15 +139,40 @@
     1000px 100px #fff, 1100px 300px #fff, 1200px 150px #fff,
     150px 400px #fff, 250px 500px #fff, 350px 600px #fff,
     450px 700px #fff, 550px 450px #fff, 650px 550px #fff,
-    50px 50px #fff, 750px 650px #fff, 850px 750px #fff;
-}
-
-.stars::after {
+    50px 50px #fff, 750px 650px #fff, 850px 750px #fff,
+    1300px 200px #fff, 1400px 400px #fff, 1500px 100px #fff,
+    100px 600px #fff, 300px 700px #fff, 500px 800px #fff;
   animation: twinkle 3s infinite;
 }
 
+.stars::after {
+  content: "";
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 
+    150px 250px #fff, 250px 150px #fff, 350px 350px #fff,
+    450px 200px #fff, 550px 300px #fff, 650px 150px #fff,
+    750px 400px #fff, 850px 250px #fff, 950px 450px #fff,
+    1050px 150px #fff, 1150px 350px #fff, 1250px 200px #fff,
+    200px 450px #fff, 300px 550px #fff, 400px 650px #fff,
+    500px 750px #fff, 600px 500px #fff, 700px 600px #fff,
+    100px 100px #fff, 800px 700px #fff, 900px 800px #fff,
+    1350px 250px #fff, 1450px 450px #fff, 1550px 150px #fff,
+    150px 650px #fff, 350px 750px #fff, 550px 850px #fff;
+  animation: twinkle 4s infinite;
+}
+
 @keyframes twinkle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.3; 
+    transform: scale(0.8);
+  }
 }
 

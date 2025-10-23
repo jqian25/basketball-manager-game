@@ -304,18 +304,19 @@ export default function QuickMatch() {
   };
 
   const handleStart = () => {
-    // 新增：先显示啦啦队开场
+    // 修复：先显示啦啦队开场，比赛不开始
     setShowCheerleader(true);
     setCommentary("欢迎来到篮球比赛现场！让我们为啦啦队的精彩表演鼓掌！");
-    
-    // 5秒后关闭啦啦队，开始比赛
-    setTimeout(() => {
-      setShowCheerleader(false);
-      setGameStarted(true);
-      setIsPaused(false);
-      setCommentary("比赛开始！双方球员进入场地！");
-      setTimeout(() => setCommentary(""), 3000);
-    }, 5000);
+    // 注意：这里不设置 gameStarted=true
+  };
+  
+  // 新增：啦啦队视频播放完毕的回调
+  const handleCheerleaderEnd = () => {
+    setShowCheerleader(false);
+    setGameStarted(true);
+    setIsPaused(false);
+    setCommentary("比赛开始！双方球员进入场地！");
+    setTimeout(() => setCommentary(""), 3000);
   };
 
   const handlePause = () => {
@@ -356,7 +357,7 @@ export default function QuickMatch() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-200 via-blue-100 to-orange-100 relative overflow-hidden">
-      {/* 新增：啦啦队开场全屏显示 */}
+      {/* 修复：啦啦队开场全屏显示（使用视频/图片+自动关闭） */}
       <AnimatePresence>
         {showCheerleader && (
           <motion.div
@@ -364,22 +365,31 @@ export default function QuickMatch() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+            onClick={handleCheerleaderEnd}
           >
+            {/* 使用图片模拟视频，5秒后自动关闭 */}
             <img
               src="/cheerleader-performance.png"
               alt="Cheerleader Performance"
               className="w-full h-full object-cover"
+              onLoad={() => {
+                // 图片加载后5秒自动关闭
+                setTimeout(handleCheerleaderEnd, 5000);
+              }}
             />
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="absolute bottom-20 left-0 right-0 text-center"
+              className="absolute bottom-20 left-0 right-0 text-center pointer-events-none"
             >
               <div className="text-5xl font-bold text-white drop-shadow-2xl">
                 🎉 啦啦队热场表演 🎉
               </div>
               <div className="text-2xl text-yellow-400 mt-4">
                 比赛即将开始...
+              </div>
+              <div className="text-lg text-white/80 mt-2">
+                （点击屏幕跳过）
               </div>
             </motion.div>
           </motion.div>
