@@ -3,15 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import OpeningAnimation from "@/components/OpeningAnimation";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { useState } from "react";
 import { useLocation } from "wouter";
-import "../styles/starwars.css";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
-  const [showCrawl, setShowCrawl] = useState(true);
+  const [showOpening, setShowOpening] = useState(true);
   const [showLogin, setShowLogin] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(false);
 
@@ -21,8 +21,8 @@ export default function Home() {
     return null;
   }
 
-  const handleSkipCrawl = () => {
-    setShowCrawl(false);
+  const handleOpeningComplete = () => {
+    setShowOpening(false);
     setShowLogin(true);
   };
 
@@ -41,42 +41,20 @@ export default function Home() {
     window.location.href = getLoginUrl();
   };
 
-  if (showCrawl) {
-    return (
-      <div className="starwars-container">
-        <div className="stars"></div>
-        <div className="starwars-crawl">
-          <div className="starwars-title">篮球热潮物语</div>
-          <p>
-            在遥远的篮球宇宙中，一个传奇的篮球俱乐部即将诞生......
-          </p>
-          <p>
-            作为新任经理，你将肩负起打造世界顶级篮球队的重任。从招募天赋异禀的球员，到精心设计战术策略；从建设豪华的训练设施，到赢得赞助商的青睐。
-          </p>
-          <p>
-            每一个决策都将影响球队的命运。培养球员的六维属性，掌握17种成长类型的奥秘。在激烈的比赛中运用战术智慧，带领你的球队从业余联赛一路征战到世界联赛的巅峰。
-          </p>
-          <p>
-            球迷们期待着你的表现，赞助商们关注着你的成绩。在这个充满挑战与机遇的篮球世界里，只有最优秀的经理才能打造出名震四海的传奇球队！
-          </p>
-          <p>
-            现在，你的篮球传奇即将开始......
-          </p>
-        </div>
-        <button className="starwars-skip" onClick={handleSkipCrawl}>
-          跳过开场 →
-        </button>
-      </div>
-    );
+  if (showOpening) {
+    return <OpeningAnimation onComplete={handleOpeningComplete} />;
   }
 
   if (showLogin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 relative overflow-hidden">
+        {/* 动态背景效果 */}
         <div className="stars"></div>
-        <Card className="w-full max-w-md mx-4 bg-gray-900/80 border-yellow-500/30 backdrop-blur-sm">
+        <div className="particles"></div>
+        
+        <Card className="w-full max-w-md mx-4 bg-gray-900/80 border-yellow-500/30 backdrop-blur-sm relative z-10">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-3xl font-bold text-center text-yellow-400">
+            <CardTitle className="text-3xl font-bold text-center text-yellow-400 glow-text">
               {APP_TITLE}
             </CardTitle>
             <CardDescription className="text-center text-gray-300">
@@ -88,7 +66,7 @@ export default function Home() {
               <>
                 <Button
                   onClick={handleGuestLogin}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-all hover:scale-105"
                   size="lg"
                 >
                   游客登录
@@ -103,7 +81,7 @@ export default function Home() {
                 </div>
                 <Button
                   onClick={handleUserLogin}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900"
+                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 transition-all hover:scale-105"
                   size="lg"
                 >
                   注册用户登录
@@ -140,7 +118,7 @@ export default function Home() {
                 </div>
                 <Button
                   onClick={handleRegister}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900"
+                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 transition-all hover:scale-105"
                   size="lg"
                 >
                   注册

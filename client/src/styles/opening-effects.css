@@ -1,0 +1,296 @@
+/* 发光文字效果 - 灌篮高手风格 */
+.glow-text {
+  text-shadow: 
+    0 0 10px rgba(254, 218, 74, 0.8),
+    0 0 20px rgba(254, 218, 74, 0.6),
+    0 0 30px rgba(254, 218, 74, 0.4),
+    0 0 40px rgba(254, 218, 74, 0.2);
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+.glow-text-strong {
+  text-shadow: 
+    0 0 10px rgba(254, 218, 74, 1),
+    0 0 20px rgba(254, 218, 74, 0.8),
+    0 0 30px rgba(254, 218, 74, 0.6),
+    0 0 40px rgba(254, 218, 74, 0.4),
+    0 0 60px rgba(254, 218, 74, 0.3),
+    0 0 80px rgba(254, 218, 74, 0.2);
+  animation: textGlowStrong 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+  from {
+    text-shadow: 
+      0 0 10px rgba(254, 218, 74, 0.8),
+      0 0 20px rgba(254, 218, 74, 0.6),
+      0 0 30px rgba(254, 218, 74, 0.4);
+  }
+  to {
+    text-shadow: 
+      0 0 20px rgba(254, 218, 74, 1),
+      0 0 30px rgba(254, 218, 74, 0.8),
+      0 0 40px rgba(254, 218, 74, 0.6),
+      0 0 50px rgba(254, 218, 74, 0.4);
+  }
+}
+
+@keyframes textGlowStrong {
+  from {
+    text-shadow: 
+      0 0 10px rgba(254, 218, 74, 1),
+      0 0 20px rgba(254, 218, 74, 0.8),
+      0 0 30px rgba(254, 218, 74, 0.6),
+      0 0 40px rgba(254, 218, 74, 0.4);
+  }
+  to {
+    text-shadow: 
+      0 0 20px rgba(254, 218, 74, 1),
+      0 0 30px rgba(254, 218, 74, 0.9),
+      0 0 40px rgba(254, 218, 74, 0.7),
+      0 0 60px rgba(254, 218, 74, 0.5),
+      0 0 80px rgba(254, 218, 74, 0.3);
+  }
+}
+
+/* 金色光晕效果 */
+.golden-glow {
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 215, 0, 0.4) 0%,
+    rgba(255, 215, 0, 0.2) 30%,
+    rgba(255, 215, 0, 0) 70%
+  );
+  filter: blur(40px);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* 樱花飘落效果 */
+.cherry-blossoms {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cherry-blossoms::before,
+.cherry-blossoms::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle, #FFB7C5 0%, #FFC0CB 50%, transparent 100%);
+  border-radius: 50% 0 50% 0;
+  opacity: 0.8;
+  animation: fall 10s linear infinite;
+}
+
+.cherry-blossoms::before {
+  left: 10%;
+  animation-delay: 0s;
+  box-shadow: 
+    100px 200px 0 #FFB7C5,
+    200px 100px 0 #FFC0CB,
+    300px 300px 0 #FFB7C5,
+    400px 150px 0 #FFC0CB,
+    500px 250px 0 #FFB7C5,
+    600px 100px 0 #FFC0CB,
+    700px 350px 0 #FFB7C5,
+    800px 200px 0 #FFC0CB;
+}
+
+.cherry-blossoms::after {
+  left: 50%;
+  animation-delay: 5s;
+  box-shadow: 
+    150px 400px 0 #FFB7C5,
+    250px 500px 0 #FFC0CB,
+    350px 600px 0 #FFB7C5,
+    450px 700px 0 #FFC0CB,
+    550px 450px 0 #FFB7C5,
+    650px 550px 0 #FFC0CB,
+    50px 50px 0 #FFB7C5,
+    750px 650px 0 #FFC0CB;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+/* 粒子特效 */
+.particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particles::before,
+.particles::after {
+  content: "";
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(254, 218, 74, 0.8);
+  border-radius: 50%;
+  box-shadow: 
+    100px 200px 0 rgba(254, 218, 74, 0.6),
+    200px 100px 0 rgba(254, 218, 74, 0.8),
+    300px 300px 0 rgba(254, 218, 74, 0.5),
+    400px 150px 0 rgba(254, 218, 74, 0.7),
+    500px 250px 0 rgba(254, 218, 74, 0.6),
+    600px 100px 0 rgba(254, 218, 74, 0.8),
+    700px 350px 0 rgba(254, 218, 74, 0.5),
+    800px 200px 0 rgba(254, 218, 74, 0.7),
+    900px 400px 0 rgba(254, 218, 74, 0.6),
+    1000px 100px 0 rgba(254, 218, 74, 0.8);
+  animation: float 8s ease-in-out infinite;
+}
+
+.particles::after {
+  animation-delay: 4s;
+  animation-duration: 12s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50px) translateX(50px);
+  }
+}
+
+/* 镜头光晕效果 */
+.lens-flare {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(254, 218, 74, 0.4) 30%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(20px);
+  animation: flare 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes flare {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 运动模糊效果 */
+.motion-blur {
+  filter: blur(0px);
+  animation: motionBlur 0.5s ease-out;
+}
+
+@keyframes motionBlur {
+  0% {
+    filter: blur(0px);
+  }
+  50% {
+    filter: blur(8px);
+  }
+  100% {
+    filter: blur(0px);
+  }
+}
+
+/* 朦胧背景效果 */
+.dreamy-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.dreamy-bg::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 182, 193, 0.3) 0%,
+    rgba(255, 218, 74, 0.2) 30%,
+    transparent 70%
+  );
+  animation: dreamyMove 10s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes dreamyMove {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(10%, 10%);
+  }
+}
+
+/* 篮球弹跳阴影 */
+.basketball-shadow {
+  position: absolute;
+  width: 150px;
+  height: 30px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.2) 50%,
+    transparent 100%
+  );
+  filter: blur(10px);
+  animation: shadowBounce 1.5s ease-out;
+}
+
+@keyframes shadowBounce {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
+}
+
