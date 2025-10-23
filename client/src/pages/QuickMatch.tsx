@@ -5,7 +5,9 @@ import { ArrowLeft, Play, Pause, FastForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import PixelMatchView from "@/components/PixelMatchView";
-import { Monitor, Gamepad2 } from "lucide-react";
+import MatchOpeningCrawl from "@/components/MatchOpeningCrawl";
+import KairoBasketballGame from "@/components/kairo/KairoBasketballGame";
+import { Monitor, Gamepad2, Building2 } from "lucide-react";
 
 // 模拟比赛事件
 interface GameEvent {
@@ -117,6 +119,7 @@ export default function QuickMatch() {
   const [crowdReaction, setCrowdReaction] = useState<string>("");
   const [cameraAngle, setCameraAngle] = useState<"wide" | "close" | "hoop" | "crowd">("wide");
   const [viewMode, setViewMode] = useState<"cinematic" | "pixel">("cinematic"); // 新增：视角模式
+  const [showStarWarsCrawl, setShowStarWarsCrawl] = useState(false); // 新增：星球大战开场
   const [showCheerleader, setShowCheerleader] = useState(false); // 新增：啦啦队开场
   
   const eventIdCounter = useRef(0);
