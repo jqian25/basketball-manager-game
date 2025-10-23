@@ -55,7 +55,7 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
         >
           <div className="stars"></div>
           <div className="starwars-crawl glow-text">
-            <div className="starwars-title">篮球热潮物语</div>
+            <div className="starwars-title">篮球经理</div>
             <p>
               在遥远的篮球宇宙中，一个传奇的篮球俱乐部即将诞生......
             </p>
