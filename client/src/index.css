@@ -43,39 +43,40 @@
 }
 
 :root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-600);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.235 0.015 65);
+  /* 灌篮高手配色：橙色主色 + 天空蓝辅色 */
+  --primary: var(--color-orange-600); /* 橙色 */
+  --primary-foreground: var(--color-white);
+  --sidebar-primary: var(--color-orange-500);
+  --sidebar-primary-foreground: var(--color-white);
+  --chart-1: var(--color-orange-300);
+  --chart-2: var(--color-sky-400);
+  --chart-3: var(--color-orange-500);
+  --chart-4: var(--color-sky-600);
+  --chart-5: var(--color-orange-700);
+  --radius: 0.75rem;
+  --background: oklch(0.99 0.005 220); /* 天空白 */
+  --foreground: oklch(0.2 0.015 20);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.235 0.015 65);
+  --card-foreground: oklch(0.2 0.015 20);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.235 0.015 65);
-  --secondary: oklch(0.98 0.001 286.375);
-  --secondary-foreground: oklch(0.4 0.015 65);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.141 0.005 285.823);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.623 0.214 259.815);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.235 0.015 65);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
+  --popover-foreground: oklch(0.2 0.015 20);
+  --secondary: oklch(0.8 0.08 220); /* 天空蓝 */
+  --secondary-foreground: oklch(0.1 0.015 20);
+  --muted: oklch(0.96 0.005 220);
+  --muted-foreground: oklch(0.5 0.01 20);
+  --accent: oklch(0.75 0.15 85); /* 金色 */
+  --accent-foreground: oklch(0.1 0.01 20);
+  --destructive: oklch(0.6 0.24 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.92 0.005 220);
+  --input: oklch(0.92 0.005 220);
+  --ring: oklch(0.65 0.18 35); /* 橙色环 */
+  --sidebar: oklch(0.99 0 0);
+  --sidebar-foreground: oklch(0.2 0.015 20);
+  --sidebar-accent: oklch(0.96 0.005 220);
+  --sidebar-accent-foreground: oklch(0.1 0.01 20);
+  --sidebar-border: oklch(0.92 0.005 220);
+  --sidebar-ring: oklch(0.65 0.18 35);
 }
 
 .dark {
@@ -130,6 +131,56 @@
   input[type="checkbox"]:not(:disabled),
   input[type="radio"]:not(:disabled) {
     @apply cursor-pointer;
+  }
+}
+
+/* 星空背景 */
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.stars::before,
+.stars::after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 
+    100px 200px 0 white,
+    200px 100px 0 white,
+    300px 300px 0 white,
+    400px 150px 0 white,
+    500px 250px 0 white,
+    600px 100px 0 white,
+    700px 350px 0 white,
+    800px 200px 0 white,
+    900px 400px 0 white,
+    1000px 100px 0 white,
+    1100px 300px 0 white,
+    1200px 200px 0 white,
+    1300px 450px 0 white,
+    1400px 150px 0 white,
+    1500px 350px 0 white;
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.stars::after {
+  animation-delay: 1.5s;
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
