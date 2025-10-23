@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import OpeningAnimation from "@/components/OpeningAnimation";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Zap, Trophy, X, Check } from "lucide-react";
 
@@ -15,10 +15,11 @@ export default function Home() {
   const [showLogin, setShowLogin] = useState(false);
 
   // 如果已登录，直接跳转到游戏（使用useEffect避免渲染期间调用）
-  if (isAuthenticated && user && !showOpening) {
-    setLocation("/game");
-    return null;
-  }
+  useEffect(() => {
+    if (isAuthenticated && user && !showOpening) {
+      setLocation("/game");
+    }
+  }, [isAuthenticated, user, showOpening, setLocation]);
 
   const handleOpeningComplete = () => {
     setShowOpening(false);
