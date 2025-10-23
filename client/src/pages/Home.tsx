@@ -57,7 +57,7 @@ export default function Home() {
         </motion.h1>
 
         {/* 两个大竖条 */}
-        <div className="flex gap-8 max-w-6xl w-full mt-20">
+        <div className="flex gap-8 max-w-4xl w-full mt-20">
           {/* 左侧 - 游客模式 */}
           <motion.div
             initial={{ opacity: 0, x: -100 }}
