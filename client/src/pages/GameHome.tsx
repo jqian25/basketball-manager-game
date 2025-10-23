@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_TITLE } from "@/const";
 import { useLocation } from "wouter";
+import AIAssistant from "@/components/AIAssistant";
 
 export default function GameHome() {
   const [, setLocation] = useLocation();
@@ -12,6 +13,8 @@ export default function GameHome() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+      {/* AI助手 */}
+      <AIAssistant />
       {/* 顶部导航栏 */}
       <nav className="bg-gray-900/80 border-b border-yellow-500/30 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
