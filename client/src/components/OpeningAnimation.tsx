@@ -96,7 +96,7 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
             muted
             loop
           >
-            <source src="/opening-anime.mp4" type="video/mp4" />
+            <source src="/opening-fate-style.mp4" type="video/mp4" />
           </video>
           
           {/* 球员投篮特写 */}
