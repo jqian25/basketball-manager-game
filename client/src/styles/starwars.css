@@ -23,9 +23,20 @@
   width: 100%;
   height: 100%;
   background: #000;
+  background-image: url('/bg-romantic-court.png');
+  background-size: cover;
+  background-position: center;
   overflow: hidden;
   perspective: 400px;
   perspective-origin: 50% 50%;
+}
+
+.starwars-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
 }
 
 .starwars-crawl {
