@@ -17,6 +17,16 @@ import PixelRPG from "./pages/PixelRPG";
 import BasketballRPG from "./pages/BasketballRPG";
 import KairoBasketball from "./pages/KairoBasketball";
 import PokemonBasketball from "./pages/PokemonBasketball";
+import TokyoDemo from "./pages/TokyoDemo";
+import TokyoSceneViewer from './pages/TokyoSceneViewer';
+import AnimationDemo from './pages/AnimationDemo';
+import FullAnimationDemo from './pages/FullAnimationDemo';
+import TokyoWorldMap from './pages/TokyoWorldMap';
+import StarWarsOpening from './components/StarWarsOpening';
+import CheerleaderOpening from './components/CheerleaderOpening';
+import ShibuyaDemo from "./pages/ShibuyaDemo";
+import BasketballCourt from "./pages/BasketballCourt";
+import ShootingGame from "./pages/ShootingGame";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -35,6 +45,16 @@ function Router() {
       <Route path={"/basketball-rpg"} component={BasketballRPG} />
       <Route path={"/kairo-basketball"} component={KairoBasketball} />
       <Route path={"/pokemon-basketball"} component={PokemonBasketball} />
+      <Route path={"/tokyo-demo"} component={TokyoDemo} />
+      <Route path="/tokyo" component={TokyoSceneViewer} />
+      <Route path="/animation-demo" component={AnimationDemo} />
+      <Route path="/full-animation" component={FullAnimationDemo} />
+      <Route path="/tokyo-world" component={TokyoWorldMap} />
+      <Route path="/opening" component={StarWarsOpening} />
+      <Route path="/cheerleader" component={CheerleaderOpening} />
+      <Route path={"/shibuya"} component={ShibuyaDemo} />
+      <Route path="/basketball-court" component={BasketballCourt} />
+      <Route path="/shooting-game" component={ShootingGame} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -64,3 +84,4 @@ function App() {
 }
 
 export default App;
+

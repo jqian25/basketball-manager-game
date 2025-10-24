@@ -69,6 +69,7 @@ export interface NPC extends MapObject {
   dialogueId?: string;
   movementPattern?: NPCMovementPattern;
   aiPersonality?: string; // AI对话的人格设定
+  role?: string; // NPC角色（如：教练、球员、商店老板等）
 }
 
 export type NPCMovementPattern =
@@ -83,6 +84,7 @@ export interface NPCDialogue {
   useAI: boolean; // 是否使用大模型生成对话
   staticDialogues?: string[]; // 静态对话（不使用AI时）
   aiContext?: string; // AI对话的上下文设定
+  npcRole?: string; // NPC角色描述（用于AI对话生成）
 }
 
 // ==================== 传送门/场景切换 ====================

@@ -174,7 +174,7 @@ export class NPCDialogueSystem {
       // 调用tRPC的NPC对话接口
       const result = await this.trpcClient.ai.npcChat.mutate({
         npcName: npc.name,
-        npcRole: npc.role || dialogue.npcRole || "篮球俱乐部成员",
+        npcRole: (npc as any).role || (dialogue as any).npcRole || "篮球俱乐部成员",
         npcPersonality: npc.aiPersonality || dialogue.aiContext || "友好热情，乐于助人",
         message: playerMessage,
         history: conversationHistory

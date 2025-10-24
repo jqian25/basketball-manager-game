@@ -1,0 +1,356 @@
+{
+  "name": "Tokyo World Map",
+  "width": 200,
+  "height": 200,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "orientation": "isometric",
+  "renderorder": "right-down",
+  "version": "1.10",
+  "tiledversion": "1.10.2",
+  "type": "map",
+  "layers": [
+    {
+      "id": 1,
+      "name": "Ground",
+      "type": "tilelayer",
+      "width": 200,
+      "height": 200,
+      "visible": true,
+      "opacity": 1,
+      "data": []
+    },
+    {
+      "id": 2,
+      "name": "Buildings",
+      "type": "tilelayer",
+      "width": 200,
+      "height": 200,
+      "visible": true,
+      "opacity": 1,
+      "data": []
+    },
+    {
+      "id": 3,
+      "name": "Decorations",
+      "type": "tilelayer",
+      "width": 200,
+      "height": 200,
+      "visible": true,
+      "opacity": 1,
+      "data": []
+    },
+    {
+      "id": 4,
+      "name": "Landmarks",
+      "type": "objectgroup",
+      "visible": true,
+      "opacity": 1,
+      "objects": [
+        {
+          "id": 1,
+          "name": "Tokyo Tower",
+          "type": "landmark",
+          "x": 3200,
+          "y": 3200,
+          "width": 256,
+          "height": 256,
+          "properties": {
+            "image": "/landmarks/tokyo_tower.png",
+            "description": "333m tall red and white tower"
+          }
+        },
+        {
+          "id": 2,
+          "name": "Tokyo Skytree",
+          "type": "landmark",
+          "x": 4800,
+          "y": 2400,
+          "width": 256,
+          "height": 256,
+          "properties": {
+            "image": "/landmarks/tokyo_skytree.png",
+            "description": "634m tall blue tower"
+          }
+        },
+        {
+          "id": 3,
+          "name": "Shibuya Crossing",
+          "type": "landmark",
+          "x": 2400,
+          "y": 3200,
+          "width": 512,
+          "height": 512,
+          "properties": {
+            "image": "/maps/tokyo/commercial/shibuya_crossing.png",
+            "description": "World's busiest pedestrian crossing"
+          }
+        },
+        {
+          "id": 4,
+          "name": "Asakusa Temple",
+          "type": "landmark",
+          "x": 5200,
+          "y": 2800,
+          "width": 256,
+          "height": 256,
+          "properties": {
+            "image": "/landmarks/asakusa_temple.png",
+            "description": "Traditional Buddhist temple with red gate"
+          }
+        },
+        {
+          "id": 5,
+          "name": "Meiji Shrine",
+          "type": "landmark",
+          "x": 2000,
+          "y": 2400,
+          "width": 256,
+          "height": 256,
+          "properties": {
+            "image": "/landmarks/meiji_shrine.png",
+            "description": "Shinto shrine in dense forest"
+          }
+        },
+        {
+          "id": 6,
+          "name": "Imperial Palace",
+          "type": "landmark",
+          "x": 3600,
+          "y": 3600,
+          "width": 256,
+          "height": 256,
+          "properties": {
+            "image": "/landmarks/imperial_palace.png",
+            "description": "Emperor's residence with moat"
+          }
+        },
+        {
+          "id": 7,
+          "name": "Tokyo Dome",
+          "type": "landmark",
+          "x": 4000,
+          "y": 2800,
+          "width": 256,
+          "height": 256,
+          "properties": {
+            "image": "/landmarks/tokyo_dome.png",
+            "description": "Famous baseball stadium"
+          }
+        },
+        {
+          "id": 8,
+          "name": "Rainbow Bridge",
+          "type": "landmark",
+          "x": 2800,
+          "y": 4800,
+          "width": 256,
+          "height": 256,
+          "properties": {
+            "image": "/landmarks/rainbow_bridge.png",
+            "description": "Suspension bridge with colorful lights"
+          }
+        },
+        {
+          "id": 9,
+          "name": "Fuji TV Building",
+          "type": "landmark",
+          "x": 3200,
+          "y": 5200,
+          "width": 256,
+          "height": 256,
+          "properties": {
+            "image": "/landmarks/fuji_tv.png",
+            "description": "Modern building with blue glass sphere"
+          }
+        },
+        {
+          "id": 10,
+          "name": "Shibuya 109",
+          "type": "landmark",
+          "x": 2400,
+          "y": 3400,
+          "width": 256,
+          "height": 256,
+          "properties": {
+            "image": "/landmarks/shibuya_109.png",
+            "description": "Iconic cylindrical fashion building"
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Districts",
+      "type": "objectgroup",
+      "visible": true,
+      "opacity": 1,
+      "objects": [
+        {
+          "id": 11,
+          "name": "Shibuya",
+          "type": "district",
+          "x": 2000,
+          "y": 3000,
+          "width": 800,
+          "height": 800,
+          "properties": {
+            "category": "commercial",
+            "description": "Youth culture and shopping hub"
+          }
+        },
+        {
+          "id": 12,
+          "name": "Shinjuku",
+          "type": "district",
+          "x": 2800,
+          "y": 2400,
+          "width": 800,
+          "height": 800,
+          "properties": {
+            "category": "commercial",
+            "description": "Business and entertainment district"
+          }
+        },
+        {
+          "id": 13,
+          "name": "Akihabara",
+          "type": "district",
+          "x": 4400,
+          "y": 3200,
+          "width": 800,
+          "height": 800,
+          "properties": {
+            "category": "commercial",
+            "description": "Electronics and anime district"
+          }
+        },
+        {
+          "id": 14,
+          "name": "Asakusa",
+          "type": "district",
+          "x": 5000,
+          "y": 2600,
+          "width": 800,
+          "height": 800,
+          "properties": {
+            "category": "cultural",
+            "description": "Traditional temple district"
+          }
+        },
+        {
+          "id": 15,
+          "name": "Harajuku",
+          "type": "district",
+          "x": 2200,
+          "y": 2600,
+          "width": 600,
+          "height": 600,
+          "properties": {
+            "category": "commercial",
+            "description": "Fashion and youth culture"
+          }
+        },
+        {
+          "id": 16,
+          "name": "Ginza",
+          "type": "district",
+          "x": 3600,
+          "y": 4000,
+          "width": 800,
+          "height": 800,
+          "properties": {
+            "category": "commercial",
+            "description": "Luxury shopping district"
+          }
+        },
+        {
+          "id": 17,
+          "name": "Odaiba",
+          "type": "district",
+          "x": 2800,
+          "y": 5000,
+          "width": 1000,
+          "height": 800,
+          "properties": {
+            "category": "special",
+            "description": "Waterfront entertainment area"
+          }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Transportation",
+      "type": "objectgroup",
+      "visible": true,
+      "opacity": 1,
+      "objects": [
+        {
+          "id": 18,
+          "name": "Shibuya Station",
+          "type": "station",
+          "x": 2400,
+          "y": 3400,
+          "width": 128,
+          "height": 128,
+          "properties": {
+            "lines": ["JR Yamanote", "Tokyo Metro", "Keio"],
+            "connections": ["Shinjuku", "Harajuku", "Ebisu"]
+          }
+        },
+        {
+          "id": 19,
+          "name": "Shinjuku Station",
+          "type": "station",
+          "x": 3000,
+          "y": 2800,
+          "width": 128,
+          "height": 128,
+          "properties": {
+            "lines": ["JR Yamanote", "Tokyo Metro", "Odakyu"],
+            "connections": ["Shibuya", "Ikebukuro", "Tokyo"]
+          }
+        },
+        {
+          "id": 20,
+          "name": "Tokyo Station",
+          "type": "station",
+          "x": 4000,
+          "y": 3600,
+          "width": 128,
+          "height": 128,
+          "properties": {
+            "lines": ["JR Yamanote", "Shinkansen", "Tokyo Metro"],
+            "connections": ["Shinagawa", "Ueno", "All Japan"]
+          }
+        },
+        {
+          "id": 21,
+          "name": "Shinkansen Line",
+          "type": "railway",
+          "x": 3800,
+          "y": 3400,
+          "width": 400,
+          "height": 64,
+          "properties": {
+            "type": "bullet_train",
+            "speed": "320km/h"
+          }
+        }
+      ]
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "source": "tokyo_tileset.json"
+    }
+  ],
+  "properties": {
+    "description": "Complete Tokyo world map with 50 scenes, 10 landmarks, 7 districts",
+    "scale": "1 tile = 1 meter",
+    "total_area": "6.4km x 6.4km",
+    "style": "Kairosoft Basketball Club Story"
+  }
+}
