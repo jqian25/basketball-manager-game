@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Play, Pause, FastForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import PixelMatchView from "@/components/PixelMatchView";
+import KairoMatch from "@/components/game/KairoMatch";
 import MatchOpeningCrawl from "@/components/MatchOpeningCrawl";
 import KairoBasketballGame from "@/components/kairo/KairoBasketballGame";
 import { Monitor, Gamepad2, Building2 } from "lucide-react";
@@ -706,16 +706,10 @@ export default function QuickMatch() {
               )}
             </div>
             
-            {/* 新增：像素动画视图 */}
+            {/* 新增：开罗风格比赛视图 */}
             {gameStarted && viewMode === "pixel" && (
               <Card className="bg-black/90 backdrop-blur-sm shadow-2xl overflow-hidden mt-6">
-                <PixelMatchView
-                  homeScore={homeScore}
-                  awayScore={awayScore}
-                  quarter={quarter}
-                  timeRemaining={timeRemaining}
-                  currentEvent={currentEvent?.description}
-                />
+                <KairoMatch />
               </Card>
             )}
           </div>

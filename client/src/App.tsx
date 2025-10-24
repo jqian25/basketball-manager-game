@@ -11,6 +11,12 @@ import MatchPlay from "./pages/MatchPlay";
 import PlayerManage from "./pages/PlayerManage";
 import QuickMatch from "./pages/QuickMatch";
 import OpenWorld from "./pages/OpenWorld";
+import KairoGame from "./pages/KairoGame";
+import ModernManager from "./pages/ModernManager";
+import PixelRPG from "./pages/PixelRPG";
+import BasketballRPG from "./pages/BasketballRPG";
+import KairoBasketball from "./pages/KairoBasketball";
+import PokemonBasketball from "./pages/PokemonBasketball";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -23,6 +29,12 @@ function Router() {
       <Route path={"/match/play"} component={MatchPlay} />
       <Route path={"/players"} component={PlayerManage} />
       <Route path={"/openworld"} component={OpenWorld} />
+      <Route path={"/kairo"} component={KairoGame} />
+      <Route path={"/modern"} component={ModernManager} />
+      <Route path={"/rpg"} component={PixelRPG} />
+      <Route path={"/basketball-rpg"} component={BasketballRPG} />
+      <Route path={"/kairo-basketball"} component={KairoBasketball} />
+      <Route path={"/pokemon-basketball"} component={PokemonBasketball} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

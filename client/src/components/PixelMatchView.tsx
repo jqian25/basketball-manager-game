@@ -276,7 +276,7 @@ export default function PixelMatchView({
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [ball, players]);
+  }, [ball]);
 
   // 根据比赛事件触发动作
   useEffect(() => {

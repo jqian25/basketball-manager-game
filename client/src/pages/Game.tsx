@@ -15,6 +15,7 @@ import {
   Play,
   Home,
   Map,
+  Gamepad2,
 } from "lucide-react";
 
 export default function Game() {
@@ -83,6 +84,46 @@ export default function Game() {
       color: "from-indigo-500 to-indigo-600",
       path: "/openworld",
       available: isAuthenticated,
+    },
+    {
+      icon: Gamepad2,
+      title: "开罗经营模式",
+      description: "经典像素风格经营养成游戏",
+      color: "from-rose-500 to-rose-600",
+      path: "/kairo",
+      available: isAuthenticated,
+    },
+    {
+      icon: Building2,
+      title: "现代化经理模式",
+      description: "Fate风格高质量UI经营游戏",
+      color: "from-cyan-500 to-cyan-600",
+      path: "/modern",
+      available: isAuthenticated,
+    },
+    {
+      icon: Map,
+      title: "像素RPG模式",
+      description: "宝可梦风格自由探索篮球游戏",
+      color: "from-violet-500 to-violet-600",
+      path: "/rpg",
+      available: true,
+    },
+    {
+      icon: Gamepad2,
+      title: "篮球RPG冒险",
+      description: "完整可玩的宝可梦风格篮球游戏",
+      color: "from-emerald-500 to-emerald-600",
+      path: "/basketball-rpg",
+      available: true,
+    },
+    {
+      icon: Building2,
+      title: "开罗篮球物语",
+      description: "真正能移动的开罗风格经营游戏",
+      color: "from-pink-500 to-pink-600",
+      path: "/kairo-basketball",
+      available: true,
     },
   ];
 

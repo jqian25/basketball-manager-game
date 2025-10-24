@@ -1,5 +1,5 @@
 /**
- * NPC对话系统
+ * NPC对话系统 - 集成Manus LLM
  * 支持静态对话和AI生成对话
  */
 
@@ -21,6 +21,18 @@ export class NPCDialogueSystem {
   private dialogues: Map<string, NPCDialogue> = new Map();
   private currentSession: DialogueSession | null = null;
   private conversationHistory: Map<string, DialogueMessage[]> = new Map();
+  private trpcClient: any; // tRPC客户端
+
+  constructor(trpcClient?: any) {
+    this.trpcClient = trpcClient;
+  }
+
+  /**
+   * 设置tRPC客户端
+   */
+  setTRPCClient(client: any) {
+    this.trpcClient = client;
+  }
 
   /**
    * 注册NPC对话
@@ -49,8 +61,8 @@ export class NPCDialogueSystem {
     // 获取历史对话
     const history = this.conversationHistory.get(npc.id) || [];
 
-    if (dialogue.useAI) {
-      // 使用AI生成对话
+    if (dialogue.useAI && this.trpcClient) {
+      // 使用Manus LLM生成对话
       const greeting = await this.generateAIResponse(
         npc,
         dialogue,
@@ -104,9 +116,15 @@ export class NPCDialogueSystem {
 
     let response: string;
 
-    if (dialogue.useAI) {
-      // 使用AI生成回复
-      const npc = { id: npcId, name: dialogue.npcId } as NPC; // 简化版NPC对象
+    if (dialogue.useAI && this.trpcClient) {
+      // 使用Manus LLM生成回复
+      const npc = { 
+        id: npcId, 
+        name: dialogue.npcId,
+        role: dialogue.npcRole || "NPC",
+        aiPersonality: dialogue.aiContext || "友好热情"
+      } as NPC;
+      
       response = await this.generateAIResponse(
         npc,
         dialogue,
@@ -133,7 +151,7 @@ export class NPCDialogueSystem {
   }
 
   /**
-   * 使用AI生成对话回复
+   * 使用Manus LLM生成对话回复
    */
   private async generateAIResponse(
     npc: NPC,
@@ -143,77 +161,31 @@ export class NPCDialogueSystem {
     history: DialogueMessage[]
   ): Promise<string> {
     try {
-      // 构建系统提示词
-      const systemPrompt = this.buildSystemPrompt(npc, dialogue, playerName);
+      if (!this.trpcClient) {
+        throw new Error("tRPC client not initialized");
+      }
 
       // 构建对话历史
-      const conversationContext = history.slice(-10).map(msg => ({
-        role: msg.speaker === npc.name ? "assistant" : "user",
+      const conversationHistory = history.slice(-10).map(msg => ({
+        role: msg.speaker === npc.name ? "assistant" as const : "user" as const,
         content: msg.text
       }));
 
-      // 调用手机端大模型API
-      const response = await fetch("/api/ai/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "mobile-llm", // 手机端大模型
-          messages: [
-            { role: "system", content: systemPrompt },
-            ...conversationContext,
-            { role: "user", content: playerMessage }
-          ],
-          temperature: 0.8,
-          max_tokens: 150
-        })
+      // 调用tRPC的NPC对话接口
+      const result = await this.trpcClient.ai.npcChat.mutate({
+        npcName: npc.name,
+        npcRole: npc.role || dialogue.npcRole || "篮球俱乐部成员",
+        npcPersonality: npc.aiPersonality || dialogue.aiContext || "友好热情，乐于助人",
+        message: playerMessage,
+        history: conversationHistory
       });
 
-      if (!response.ok) {
-        throw new Error("AI API request failed");
-      }
-
-      const data = await response.json();
-      return data.response || "...";
+      return result.reply || "...";
     } catch (error) {
       console.error("AI dialogue generation failed:", error);
       // 降级到静态对话
       return this.getRandomStaticDialogue(dialogue);
     }
-  }
-
-  /**
-   * 构建AI系统提示词
-   */
-  private buildSystemPrompt(
-    npc: NPC,
-    dialogue: NPCDialogue,
-    playerName: string
-  ): string {
-    const basePrompt = `你是${npc.name}，一个在篮球游戏中的NPC角色。`;
-    
-    const contextPrompt = dialogue.aiContext 
-      ? `\n\n角色设定：${dialogue.aiContext}`
-      : "";
-
-    const personalityPrompt = npc.aiPersonality
-      ? `\n\n性格特点：${npc.aiPersonality}`
-      : "";
-
-    const instructionPrompt = `
-
-对话规则：
-1. 保持角色设定，用第一人称说话
-2. 回复简短自然，不超过50字
-3. 可以谈论篮球、训练、比赛相关话题
-4. 如果玩家问及比赛，可以提供建议或鼓励
-5. 保持友好和乐于助人的态度
-6. 不要重复之前说过的话
-
-玩家名字：${playerName}`;
-
-    return basePrompt + contextPrompt + personalityPrompt + instructionPrompt;
   }
 
   /**
