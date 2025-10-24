@@ -211,8 +211,8 @@ export class LevelPortalSystem {
     startButton.setDepth(10001);
     startButton.setInteractive();
     startButton.on('pointerdown', () => {
-      // 跳转到投篮游戏页面
-      window.location.href = '/shooting-game';
+      // 跳转到带拉拉队开场的投篮游戏页面
+      window.location.href = '/shooting-game-opening';
     });
 
     // 取消按钮

@@ -27,6 +27,7 @@ import CheerleaderOpening from './components/CheerleaderOpening';
 import ShibuyaDemo from "./pages/ShibuyaDemo";
 import BasketballCourt from "./pages/BasketballCourt";
 import ShootingGame from "./pages/ShootingGame";
+import ShootingGameWithOpening from "./pages/ShootingGameWithOpening";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -55,6 +56,7 @@ function Router() {
       <Route path={"/shibuya"} component={ShibuyaDemo} />
       <Route path="/basketball-court" component={BasketballCourt} />
       <Route path="/shooting-game" component={ShootingGame} />
+      <Route path="/shooting-game-opening" component={ShootingGameWithOpening} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
